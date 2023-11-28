@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void desenho(Graphics g) {
 
-        if(andando) {
+        if (andando) {
             /*for (int i = 0; i < ALTURA_TELA / TAMANHO_DA_UNIDADE; i++) {
                 g.drawLine(i * TAMANHO_DA_UNIDADE, 0, i * TAMANHO_DA_UNIDADE, ALTURA_TELA);
                 g.drawLine(0, i * TAMANHO_DA_UNIDADE, LARGURA_TELA, i * TAMANHO_DA_UNIDADE);
@@ -61,28 +61,28 @@ public class GamePanel extends JPanel implements ActionListener {
                     g.fillRect(x[i], y[i], TAMANHO_DA_UNIDADE, TAMANHO_DA_UNIDADE);
                 } else {
                     g.setColor(new Color(45, 180, 0));
-                    g.setColor(new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255)));
+                    g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                     g.fillRect(x[i], y[i], TAMANHO_DA_UNIDADE, TAMANHO_DA_UNIDADE);
                 }
             }
             g.setColor(Color.red);
             g.setFont(new Font("Serif", Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
-            g.drawString("Pontuação: "+macasComidas, (LARGURA_TELA - metrics.stringWidth("Pontuação: "+macasComidas))/2, g.getFont().getSize());
+            g.drawString("Pontuação: " + macasComidas, (LARGURA_TELA - metrics.stringWidth("Pontuação: " + macasComidas)) / 2, g.getFont().getSize());
         } else {
             FimDeJogo(g);
         }
     }
 
     public void novaMaca() {
-        macaX = random.nextInt(LARGURA_TELA/TAMANHO_DA_UNIDADE) * TAMANHO_DA_UNIDADE;
-        macaY = random.nextInt(ALTURA_TELA/TAMANHO_DA_UNIDADE) * TAMANHO_DA_UNIDADE;
+        macaX = random.nextInt(LARGURA_TELA / TAMANHO_DA_UNIDADE) * TAMANHO_DA_UNIDADE;
+        macaY = random.nextInt(ALTURA_TELA / TAMANHO_DA_UNIDADE) * TAMANHO_DA_UNIDADE;
     }
 
     public void movimento() {
         for (int i = partesDoCorpo; i > 0; i--) {
-            x[i] = x[i-1];
-            y[i] = y[i-1];
+            x[i] = x[i - 1];
+            y[i] = y[i - 1];
         }
 
         switch (direcao) {
@@ -143,7 +143,7 @@ public class GamePanel extends JPanel implements ActionListener {
         g.setColor(Color.red);
         g.setFont(new Font("Serif", Font.BOLD, 75));
         FontMetrics metrics = getFontMetrics(g.getFont());
-        g.drawString("Fim de Jogo", (LARGURA_TELA - metrics.stringWidth("Fim de Jogo"))/2, ALTURA_TELA/2);
+        g.drawString("Fim de Jogo", (LARGURA_TELA - metrics.stringWidth("Fim de Jogo")) / 2, ALTURA_TELA / 2);
     }
 
     @Override
