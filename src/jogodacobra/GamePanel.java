@@ -4,13 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
-import java.util.random.*;
 
 public class GamePanel extends JPanel implements ActionListener {
 
     static final int LARGURA_TELA = 600;
     static final int ALTURA_TELA = 600;
-    static final int TAMANHO_DA_UNIDADE = 25;
+    static final int TAMANHO_DA_UNIDADE = 50;
     static final int UNIDADES_DO_JOGO = (LARGURA_TELA * ALTURA_TELA) / TAMANHO_DA_UNIDADE;
     static final int DELAY = 75;
     final int x[] = new int[UNIDADES_DO_JOGO];
@@ -41,41 +40,144 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void componenteDaPintura(Graphics g) {
-
+        super.paintComponent(g);
+        desenho(g);
     }
 
     public void desenho(Graphics g) {
 
+        if(andando) {
+            for (int i = 0; i < ALTURA_TELA / TAMANHO_DA_UNIDADE; i++) {
+                g.drawLine(i * TAMANHO_DA_UNIDADE, 0, i * TAMANHO_DA_UNIDADE, ALTURA_TELA);
+                g.drawLine(0, i * TAMANHO_DA_UNIDADE, LARGURA_TELA, i * TAMANHO_DA_UNIDADE);
+            }
+            g.setColor(Color.red);
+            g.fillOval(macaX, macaY, TAMANHO_DA_UNIDADE, TAMANHO_DA_UNIDADE);
+
+            for (int i = 0; i < partesDoCorpo; i++) {
+                if (i == 0) {
+                    g.setColor(Color.green);
+                    g.fillRect(x[i], y[i], TAMANHO_DA_UNIDADE, TAMANHO_DA_UNIDADE);
+                } else {
+                    g.setColor(new Color(45, 180, 0));
+                    g.fillRect(x[i], y[i], TAMANHO_DA_UNIDADE, TAMANHO_DA_UNIDADE);
+                }
+            }
+            g.setColor(Color.red);
+            g.setFont(new Font("Int Free", Font.BOLD, 40));
+            FontMetrics metrics = getFontMetrics(g.getFont());
+            g.drawString("Score: "+macasComidas, (LARGURA_TELA - metrics.stringWidth("Score: "+macasComidas))/2, g.getFont().getSize());
+        } else {
+            gameOver(g);
+        }
     }
 
     public void novaMaca() {
-
+        macaX = random.nextInt((int)(LARGURA_TELA/TAMANHO_DA_UNIDADE)) * TAMANHO_DA_UNIDADE;
+        macaY = random.nextInt((int)(ALTURA_TELA/TAMANHO_DA_UNIDADE)) * TAMANHO_DA_UNIDADE;
     }
-    public void movimento() {
 
+    public void movimento() {
+        for (int i = partesDoCorpo; i > 0; i--) {
+            x[i] = x[i-1];
+            y[i] = y[i-1];
+        }
+
+        switch (direcao) {
+            case 'C':
+                y[0] = y[0] - TAMANHO_DA_UNIDADE;
+                break;
+            case 'B':
+                y[0] = y[0] + TAMANHO_DA_UNIDADE;
+                break;
+            case 'E':
+                x[0] = x[0] - TAMANHO_DA_UNIDADE;
+                break;
+            case 'D':
+                x[0] = x[0] + TAMANHO_DA_UNIDADE;
+                break;
+        }
     }
 
     public void checarMaca() {
-
+        if ((x[0] == macaX) && (y[0] == macaY)) {
+            partesDoCorpo++;
+            macasComidas++;
+            novaMaca();
+        }
     }
 
     public void checarColisao() {
-
+        // checa se a cabeça colidiu com o corpo
+        for (int i = partesDoCorpo; i > 0; i--) {
+            if ((x[0] == x[i] && y[0] == y[i])) {
+                andando = false;
+            }
+        }
+        // checa se a cabeça tocou na borda esquerda
+        if (x[0] < 0) {
+            andando = false;
+        }
+        // checa se a cabeça tocou na borda direita
+        if (x[0] > LARGURA_TELA) {
+            andando = false;
+        }
+        // checa se a cabeça tocou a borda de cima
+        if (y[0] < 0) {
+            andando = false;
+        }
+        // checa se a cabeça tocou a borda de baixo
+        if (y[0] > ALTURA_TELA) {
+            andando = false;
+        }
+        if (!andando) {
+            tempo.stop();
+        }
     }
 
     public void gameOver(Graphics g) {
-
+        // texto de Game Over
+        g.setColor(Color.red);
+        g.setFont(new Font("Int Free", Font.BOLD, 75));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Game Over", (LARGURA_TELA - metrics.stringWidth("Game Over"))/2, ALTURA_TELA/2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if (andando) {
+            movimento();
+            checarMaca();
+            checarColisao();
+        }
+        repaint();
     }
 
     public class AdaptadorDeTecla extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_LEFT:
+                    if (direcao != 'D') {
+                        direcao = 'E';
+                }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if (direcao != 'E') {
+                        direcao = 'D';
+                    }
+                    break;
+                case KeyEvent.VK_UP:
+                    if (direcao != 'B') {
+                        direcao = 'C';
+                    }
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if (direcao != 'C') {
+                        direcao = 'B';
+                    }
+                    break;
+            }
         }
     }
 }
